@@ -10,7 +10,7 @@ SWITCHES = [
     ("10.100.100.2", 32775),
 ]
 
-def send_multiple_enters(tn, count=2):
+def send_multiple_enters(tn, count=3):
     for _ in range(count):
         tn.write(b"\n")
         time.sleep(1)
@@ -19,7 +19,6 @@ def initial_configuration(ip, port):
     try:
         print(f"Connecting to {ip}:{port} for initial configuration")
         tn = telnetlib.Telnet(ip, port, timeout=10)
-        
         send_multiple_enters(tn, count=3)
         tn.write(b"en\n")
         time.sleep(1)
@@ -44,7 +43,9 @@ def tftp_configuration(ip, port):
         print(f"Connecting to {ip}:{port} for TFTP configuration")
         tn = telnetlib.Telnet(ip, port, timeout=10)
         
-        send_multiple_enters(tn, count=3)
+        # Send Enter multiple times to activate the session
+        send_multiple_enters(tn, count=5)
+
         tn.write(b"en\n")
         time.sleep(1)
         tn.write(f"copy tftp://{TFTP_SERVER}/startup-config running-config\n".encode('ascii'))
