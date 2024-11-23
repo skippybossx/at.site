@@ -1,36 +1,49 @@
----
-- name: Configure switches over Telnet
-  hosts: switches
-  vars:
-    tftp_server: 10.100.100.8
-    sleep_duration: 30
-  tasks:
-    - name: Configure VLAN1 with DHCP and enable interface
-      expect:
-        command: "telnet {{ ansible_host }} {{ ansible_port }}"
-        responses:
-          "Username:": "\n"
-          "Password:": "\n"
-          "Switch>": "en\n"
-          "Switch#": "conf t\n"
-          "(config)#": |
-            int vlan1
-            ip address dhcp
-            no shut
-            end
-        timeout: 30
-      register: telnet_config_result
+import telnetlib
+import time
+from configparser import ConfigParser
 
-    - name: Wait for VLAN1 configuration to take effect
-      pause:
-        seconds: "{{ sleep_duration }}"
+TFTP_SERVER = "10.100.100.8"
+INVENTORY_FILE = "inventory.ini"
 
-    - name: Copy configuration from TFTP to running-config
-      expect:
-        command: "telnet {{ ansible_host }} {{ ansible_port }}"
-        responses:
-          "Username:": "\n"
-          "Password:": "\n"
-          "Switch>": "en\n"
-          "Switch#": "copy tftp://{{ tftp_server }}/startup-config running-config\n"
-        timeout: 60
+def parse_inventory(file):
+    config = ConfigParser()
+    config.read(file)
+    switches = []
+    for switch in config['switches']:
+        ip = config['switches'][switch].split()[0].split('=')[1]
+        port = config['switches'][switch].split()[1].split('=')[1]
+        switches.append((ip, int(port)))
+    return switches
+
+def configure_switch(ip, port):
+    tn = telnetlib.Telnet(ip, port, timeout=10)
+    tn.write(b"\n")
+    time.sleep(1)
+    tn.write(b"en\n")
+    time.sleep(1)
+    tn.write(b"conf t\n")
+    time.sleep(1)
+    tn.write(b"int vlan1\n")
+    time.sleep(1)
+    tn.write(b"ip address dhcp\n")
+    time.sleep(1)
+    tn.write(b"no shut\n")
+    time.sleep(1)
+    tn.write(b"end\n")
+    time.sleep(1)
+    tn.write(b"exit\n")
+    tn.close()
+    time.sleep(30)
+    tn = telnetlib.Telnet(ip, port, timeout=10)
+    tn.write(b"\n")
+    time.sleep(1)
+    tn.write(b"en\n")
+    time.sleep(1)
+    tn.write(f"copy tftp://{TFTP_SERVER}/startup-config running-config\n".encode('ascii'))
+    time.sleep(1)
+    tn.write(b"exit\n")
+    tn.close()
+
+switches = parse_inventory(INVENTORY_FILE)
+for ip, port in switches:
+    configure_switch(ip, port)
