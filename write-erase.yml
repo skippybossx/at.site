@@ -7,12 +7,15 @@
       ios_command:
         commands:
           - write erase
+      register: erase_output
 
-    - name: Reload the switch
+    - name: Debug erase output
+      debug:
+        var: erase_output
+
+    - name: Reload the switch without confirmation prompts
       ios_command:
         commands:
           - reload
-        prompts:
-          - "Proceed with reload? [confirm]"
-        answers:
-          - "Proceed with reload? [confirm]": "\r"
+          - no
+          - confirm
