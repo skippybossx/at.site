@@ -15,4 +15,4 @@
         prompts:
           - "Proceed with reload? [confirm]"
         answers:
-          - "Proceed with reload? [confirm]": "\n"
+          - "Proceed with reload? [confirm]": "\r"
