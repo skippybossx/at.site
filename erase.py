@@ -18,17 +18,19 @@ def clear_switch(ip, port):
         tn.write(b"en\n")
         time.sleep(1)
         tn.write(b"write erase\n")
-        time.sleep(2)  # Wait for the confirmation prompt
-        tn.write(b"y\n")  # Confirm the write erase
+        time.sleep(2)
+        tn.write(b"y\n")
         time.sleep(1)
         print(f"Write erase completed for {ip}:{port}")
         
         tn.write(b"reload\n")
-        time.sleep(2)  # Wait for the confirmation prompt
-        tn.write(b"y\n")  # Confirm the reload
+        time.sleep(2)
+        tn.write(b"no\n")  # Odpowiadamy "no" na zapisanie konfiguracji
+        time.sleep(1)
+        tn.write(b"\n")  # Potwierdzamy reload
         time.sleep(1)
         tn.close()
-        print(f"Reload initiated for {ip}:{port}")
+        print(f"Reload completed for {ip}:{port}")
     except Exception as e:
         print(f"Failed to clear switch {ip}:{port}. Error: {e}")
 
