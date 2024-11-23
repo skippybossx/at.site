@@ -9,10 +9,14 @@
           - show ip interface brief | include Vlan1
       register: vlan_ip_output
 
+    - name: Debug VLAN IP output
+      debug:
+        var: vlan_ip_output
+
     - name: Extract IP address from output
       set_fact:
-        current_ip: "{{ vlan_ip_output.stdout_lines[0].split()[1] }}"
-      when: vlan_ip_output.stdout_lines | length > 0
+        current_ip: "{{ vlan_ip_output.stdout[0].split()[1] }}"
+      when: vlan_ip_output.stdout | length > 0
 
     - name: Validate that current IP was extracted
       fail:
