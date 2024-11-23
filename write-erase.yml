@@ -7,15 +7,27 @@
       ios_command:
         commands:
           - write erase
-      register: erase_output
+      wait_for: "Continue? [confirm]"
+      timeout: 30
 
-    - name: Debug erase output
-      debug:
-        var: erase_output
+    - name: Send confirmation for erase
+      ios_command:
+        commands:
+          - "\n"  # Wysłanie Enter, aby potwierdzić
 
-    - name: Reload the switch without confirmation prompts
+    - name: Reload the switch
       ios_command:
         commands:
           - reload
+      wait_for: "Save? [yes/no]"
+      timeout: 30
+
+    - name: Answer no for saving configuration
+      ios_command:
+        commands:
           - no
-          - confirm
+
+    - name: Confirm reload
+      ios_command:
+        commands:
+          - "\n"  # Wysłanie Enter, aby potwierdzić
