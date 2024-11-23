@@ -7,27 +7,23 @@
       ios_command:
         commands:
           - write erase
-      wait_for: "Continue? [confirm]"
-      timeout: 30
 
-    - name: Send confirmation for erase
+    - name: Confirm erase operation
       ios_command:
         commands:
-          - "\n"
+          - "\n"  # Wysłanie Enter, aby potwierdzić
 
     - name: Reload the switch
       ios_command:
         commands:
           - reload
-      wait_for: "Save? [yes/no]"
-      timeout: 30
 
-    - name: Answer no for saving configuration
+    - name: Decline saving configuration
       ios_command:
         commands:
-          - no
+          - no  # Odpowiedź na pytanie o zapisanie konfiguracji
 
-    - name: Confirm reload
+    - name: Confirm reload operation
       ios_command:
         commands:
-          - "\n"
+          - "\n"  # Wysłanie Enter, aby potwierdzić
