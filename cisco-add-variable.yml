@@ -1,0 +1,20 @@
+---
+- name: Manage configuration on Cisco Switch
+  hosts: switches
+  gather_facts: no
+
+  tasks:
+    - name: Split configuration commands into lines
+      set_fact:
+        config_lines: "{{ variable.splitlines() | reject('equalto', '') | list }}"
+
+    - name: Apply configuration commands
+      ios_config:
+        lines: "{{ config_lines }}"
+        save_when: always  # Save configuration after applying changes
+
+    - name: Display success message
+      debug:
+        msg: 
+          - "Configuration applied successfully."
+          - "Commands executed: {{ config_lines }}"
