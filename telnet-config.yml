@@ -1,0 +1,36 @@
+---
+- name: Configure switches over Telnet
+  hosts: switches
+  vars:
+    tftp_server: 10.100.100.8
+    sleep_duration: 30
+  tasks:
+    - name: Configure VLAN1 with DHCP and enable interface
+      expect:
+        command: "telnet {{ ansible_host }} {{ ansible_port }}"
+        responses:
+          "Username:": "\n"
+          "Password:": "\n"
+          "Switch>": "en\n"
+          "Switch#": "conf t\n"
+          "(config)#": |
+            int vlan1
+            ip address dhcp
+            no shut
+            end
+        timeout: 30
+      register: telnet_config_result
+
+    - name: Wait for VLAN1 configuration to take effect
+      pause:
+        seconds: "{{ sleep_duration }}"
+
+    - name: Copy configuration from TFTP to running-config
+      expect:
+        command: "telnet {{ ansible_host }} {{ ansible_port }}"
+        responses:
+          "Username:": "\n"
+          "Password:": "\n"
+          "Switch>": "en\n"
+          "Switch#": "copy tftp://{{ tftp_server }}/startup-config running-config\n"
+        timeout: 60
