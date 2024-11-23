@@ -1,8 +1,37 @@
 ---
-- name: Configure Cisco switch
+- name: Configure Cisco switch with dynamic hostname
   hosts: switches
   gather_facts: no
   tasks:
+    - name: Get current IP of VLAN 1
+      ios_command:
+        commands:
+          - show ip interface brief | include Vlan1
+      register: vlan_ip_output
+
+    - name: Debug VLAN IP output
+      debug:
+        var: vlan_ip_output
+
+    - name: Extract IP address from output
+      set_fact:
+        current_ip: "{{ vlan_ip_output.stdout[0].split()[1] }}"
+      when: vlan_ip_output.stdout | length > 0
+
+    - name: Validate that current IP was extracted
+      fail:
+        msg: "Failed to extract IP address for VLAN 1."
+      when: current_ip is not defined
+
+    - name: Calculate hostname from IP
+      set_fact:
+        hostname: "cisco-atea-{{ current_ip.split('.')[-1] }}"
+
+    - name: Set dynamic hostname on the switch
+      ios_config:
+        lines:
+          - "hostname {{ hostname }}"
+
     - name: Set basic configuration
       ios_config:
         lines:
