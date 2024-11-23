@@ -15,6 +15,7 @@ def configure_switch(ip, port):
         print(f"Connecting to {ip}:{port}")
         tn = telnetlib.Telnet(ip, port, timeout=10)
         
+        # VLAN1 Configuration
         tn.write(b"\n")
         time.sleep(1)
         tn.write(b"en\n")
@@ -33,17 +34,21 @@ def configure_switch(ip, port):
         tn.close()
         print(f"Configured VLAN1 on {ip}:{port}")
 
-        time.sleep(45)
+        # Pause for DHCP to assign IP
+        time.sleep(30)
 
-        print(f"Copying TFTP configuration on {ip}:{port}")
+        # Reconnect and ensure "enable" mode
+        print(f"Reconnecting to {ip}:{port} for TFTP configuration")
         tn = telnetlib.Telnet(ip, port, timeout=10)
         tn.write(b"\n")
         time.sleep(1)
-        tn.write(b"en\n")
+        tn.write(b"en\n")  # Enter enable mode again
         time.sleep(1)
+
+        # TFTP Configuration
         tn.write(f"copy tftp://{TFTP_SERVER}/startup-config running-config\n".encode('ascii'))
         time.sleep(1)
-        tn.write(b"\n")  # Potwierdzenie Enter
+        tn.write(b"\n")  # Confirm the copy with Enter
         time.sleep(1)
         tn.write(b"exit\n")
         tn.close()
