@@ -1,19 +1,14 @@
 import telnetlib
 import time
-from configparser import ConfigParser
 
 TFTP_SERVER = "10.100.100.8"
-INVENTORY_FILE = "inventory.ini"
 
-def parse_inventory(file):
-    config = ConfigParser(allow_no_value=True)
-    config.read(file)
-    switches = []
-    for switch in config['switches']:
-        ip = config['switches'][switch].split('ansible_host=')[1].split()[0]
-        port = config['switches'][switch].split('ansible_port=')[1].split()[0]
-        switches.append((ip, int(port)))
-    return switches
+SWITCHES = [
+    ("10.100.100.2", 32769),
+    ("10.100.100.2", 32772),
+    ("10.100.100.2", 32774),
+    ("10.100.100.2", 32775),
+]
 
 def configure_switch(ip, port):
     try:
@@ -49,9 +44,9 @@ def configure_switch(ip, port):
         time.sleep(1)
         tn.write(b"exit\n")
         tn.close()
+        print(f"Copied configuration on {ip}:{port}")
     except Exception as e:
         print(f"Failed to configure switch {ip}:{port}. Error: {e}")
 
-switches = parse_inventory(INVENTORY_FILE)
-for ip, port in switches:
+for ip, port in SWITCHES:
     configure_switch(ip, port)
