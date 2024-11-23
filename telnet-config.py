@@ -32,7 +32,7 @@ def configure_switch(ip, port):
         tn.close()
         print(f"Configured VLAN1 on {ip}:{port}")
 
-        time.sleep(30)
+        time.sleep(45)
 
         print(f"Copying TFTP configuration on {ip}:{port}")
         tn = telnetlib.Telnet(ip, port, timeout=10)
