@@ -12,6 +12,12 @@
     - name: Extract IP address from output
       set_fact:
         current_ip: "{{ vlan_ip_output.stdout_lines[0].split()[1] }}"
+      when: vlan_ip_output.stdout_lines | length > 0
+
+    - name: Validate that current IP was extracted
+      fail:
+        msg: "Failed to extract IP address for VLAN 1."
+      when: current_ip is not defined
 
     - name: Calculate hostname from IP
       set_fact:
