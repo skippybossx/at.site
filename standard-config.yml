@@ -62,28 +62,18 @@
       ios_config:
         lines:
           - |
-            banner login ^C
-            ****   /////**/// /**/////     ****
-            **//**      /**    /**         **//**
-           **  //**     /**    /*******   **  //**
-          **********    /**    /**////   **********
-         /**//////**    /**    /**      /**//////**
-         /**     /**    /**    /********/**     /**
-         //      //     //     //////// //      //
-         UNAUTHORIZED ACCESS TO THIS DEVICE IS PROHIBITED
-         You must have explicit, authorized permission to access or configure this device.
-         Unauthorized attempts and actions to access or use this system may result in civil and/or
-         criminal penalties.
-         All activities performed on this device are logged and monitored.
-         -----------------------------------------------------------------------------------------
-         ^C
-
-    - name: Configure line settings
-      ios_config:
-        lines:
-          - "line con 0"
-          - " logging synchronous"
-          - "line aux 0"
-          - "line vty 0 4"
-          - " login local"
-          - " transport input ssh"
+            banner login '
+            ****   /////**/// /**/////     ****   
+           **//**      /**    /**         **//**  
+          **  //**     /**    /*******   **  //** 
+         **********    /**    /**////   **********
+        /**//////**    /**    /**      /**//////**
+        /**     /**    /**    /********/**     /**
+        //      //     //     //////// //      // 
+        UNAUTHORIZED ACCESS TO THIS DEVICE IS PROHIBITED
+        You must have explicit, authorized permission to access or configure this device.
+        Unauthorized attempts and actions to access or use this system may result in civil and/or
+        criminal penalties.
+        All activities performed on this device are logged and monitored.
+        -----------------------------------------------------------------------------------------
+            '
