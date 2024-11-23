@@ -13,7 +13,7 @@
     - name: Send confirmation for erase
       ios_command:
         commands:
-          - "\n"  # Wysłanie Enter, aby potwierdzić
+          - "\n"
 
     - name: Reload the switch
       ios_command:
@@ -30,4 +30,4 @@
     - name: Confirm reload
       ios_command:
         commands:
-          - "\n"  # Wysłanie Enter, aby potwierdzić
+          - "\n"
