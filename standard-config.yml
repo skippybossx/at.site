@@ -1,0 +1,89 @@
+---
+- name: Configure Cisco switch
+  hosts: switches
+  gather_facts: no
+  tasks:
+    - name: Set basic configuration
+      ios_config:
+        lines:
+          - "version 17.12"
+          - "service timestamps debug datetime msec"
+          - "service timestamps log datetime msec"
+          - "hostname cisco-atea-11"
+          - "no aaa new-model"
+          - "ip audit notify log"
+          - "ip audit po max-events 100"
+          - "ip domain name atea.site"
+          - "ip cef"
+          - "login on-success log"
+          - "no ipv6 cef"
+          - "vtp version 1"
+          - "multilink bundle-name authenticated"
+          - "memory free low-watermark processor 80589"
+          - "spanning-tree mode rapid-pvst"
+          - "spanning-tree extend system-id"
+
+    - name: Configure username
+      ios_config:
+        lines:
+          - "username atea privilege 15 secret 9 \$9\$CqmW0rUcetpRl.\$19Gc5fkoq8a5e/I5Fqg59y9Wa7.MgALH/zvCA6j4.U."
+
+    - name: Configure VLAN
+      ios_config:
+        lines:
+          - "vlan internal allocation policy ascending"
+
+    - name: Configure interfaces
+      ios_config:
+        lines:
+          - "interface Ethernet0/0"
+          - "interface Ethernet0/1"
+          - "interface Ethernet0/2"
+          - "interface Ethernet0/3"
+          - "interface Vlan1"
+          - " ip address dhcp"
+
+    - name: Configure IP forwarding and HTTP
+      ios_config:
+        lines:
+          - "ip forward-protocol nd"
+          - "ip http server"
+          - "ip http secure-server"
+          - "ip ssh bulk-mode 131072"
+
+    - name: Configure logging and SNMP
+      ios_config:
+        lines:
+          - "logging host 10.100.100.10"
+          - "snmp-server community ro RO"
+          - "snmp-server community public RO"
+
+    - name: Configure login banner
+      ios_config:
+        lines:
+          - |
+            banner login ^CC
+            ****   /////**/// /**/////     ****   
+           **//**      /**    /**         **//**  
+          **  //**     /**    /*******   **  //** 
+         **********    /**    /**////   **********
+        /**//////**    /**    /**      /**//////**
+        /**     /**    /**    /********/**     /**
+        //      //     //     //////// //      // 
+        UNAUTHORIZED ACCESS TO THIS DEVICE IS PROHIBITED
+        You must have explicit, authorized permission to access or configure this device.
+        Unauthorized attempts and actions to access or use this system may result in civil and/or
+        criminal penalties.
+        All activities performed on this device are logged and monitored.
+        -----------------------------------------------------------------------------------------
+        ^C
+
+    - name: Configure line settings
+      ios_config:
+        lines:
+          - "line con 0"
+          - " logging synchronous"
+          - "line aux 0"
+          - "line vty 0 4"
+          - " login local"
+          - " transport input ssh"
