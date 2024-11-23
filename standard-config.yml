@@ -9,7 +9,6 @@
           - "version 17.12"
           - "service timestamps debug datetime msec"
           - "service timestamps log datetime msec"
-          - "hostname cisco-atea-11"
           - "no aaa new-model"
           - "ip audit notify log"
           - "ip audit po max-events 100"
