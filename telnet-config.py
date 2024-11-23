@@ -14,6 +14,7 @@ def configure_switch(ip, port):
     try:
         print(f"Connecting to {ip}:{port}")
         tn = telnetlib.Telnet(ip, port, timeout=10)
+        
         tn.write(b"\n")
         time.sleep(1)
         tn.write(b"en\n")
@@ -41,6 +42,8 @@ def configure_switch(ip, port):
         tn.write(b"en\n")
         time.sleep(1)
         tn.write(f"copy tftp://{TFTP_SERVER}/startup-config running-config\n".encode('ascii'))
+        time.sleep(1)
+        tn.write(b"\n")  # Potwierdzenie Enter
         time.sleep(1)
         tn.write(b"exit\n")
         tn.close()
