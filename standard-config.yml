@@ -26,7 +26,7 @@
     - name: Configure username
       ios_config:
         lines:
-          - "username atea privilege 15 secret 9 \$9\$CqmW0rUcetpRl.\$19Gc5fkoq8a5e/I5Fqg59y9Wa7.MgALH/zvCA6j4.U."
+          - 'username atea privilege 15 secret 9 $9$CqmW0rUcetpRl.$19Gc5fkoq8a5e/I5Fqg59y9Wa7.MgALH/zvCA6j4.U.'
 
     - name: Configure VLAN
       ios_config:
