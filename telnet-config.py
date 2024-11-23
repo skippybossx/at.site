@@ -10,14 +10,20 @@ SWITCHES = [
     ("10.100.100.2", 32775),
 ]
 
+def send_multiple_enters(tn, count=2):
+    for _ in range(count):
+        tn.write(b"\n")
+        time.sleep(1)
+
 def configure_switch(ip, port):
     try:
         print(f"Connecting to {ip}:{port}")
         tn = telnetlib.Telnet(ip, port, timeout=10)
         
+        # Upewnij się, że sesja jest gotowa
+        send_multiple_enters(tn, count=3)
+
         # VLAN1 Configuration
-        tn.write(b"\n")
-        time.sleep(1)
         tn.write(b"en\n")
         time.sleep(1)
         tn.write(b"conf t\n")
@@ -35,18 +41,16 @@ def configure_switch(ip, port):
         print(f"Configured VLAN1 on {ip}:{port}")
 
         # Pause for DHCP to assign IP
-        time.sleep(45)
+        time.sleep(30)
 
-        # Reconnect and send 2x Enter before TFTP command
+        # Reconnect and ensure "enable" mode
         print(f"Reconnecting to {ip}:{port} for TFTP configuration")
         tn = telnetlib.Telnet(ip, port, timeout=10)
-        tn.write(b"\n")
-        time.sleep(1)
-        tn.write(b"\n")  # First Enter
-        time.sleep(1)
-        tn.write(b"\n")  # Second Enter
-        time.sleep(1)
-        tn.write(b"en\n")  # Enter enable mode again
+        
+        # Wysyłamy dodatkowe Entery, aby switch był w gotowości
+        send_multiple_enters(tn, count=3)
+
+        tn.write(b"en\n")
         time.sleep(1)
 
         # TFTP Configuration
