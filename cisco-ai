@@ -1,0 +1,18 @@
+---
+- hosts: docker
+  tasks:
+    - name: Execute command
+      ansible.builtin.command:
+        cmd: bash /root/ansible/ai.sh {{ command }}
+      register: result
+      failed_when: result.rc != 1
+
+    - name: Display output
+      ansible.builtin.debug:
+        var: result.stdout_lines
+
+
+
+
+
+
