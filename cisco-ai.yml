@@ -1,5 +1,5 @@
 ---
-- hosts: docker
+- hosts: ansible-run
   tasks:
     - name: Execute command
       ansible.builtin.command:
