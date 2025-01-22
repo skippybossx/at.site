@@ -3,9 +3,9 @@
   tasks:
     - name: Execute command
       ansible.builtin.command:
-        cmd: bash /root/ansible/ai.sh {{ command }}
+        cmd: python /root/ansible/ai.py {{ command }}
       register: result
-      failed_when: result.rc != 1
+
 
     - name: Display output
       ansible.builtin.debug:
