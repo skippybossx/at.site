@@ -3,7 +3,7 @@
   tasks:
     - name: Execute command
       ansible.builtin.command:
-        cmd: python /root/ansible/ai.py {{ command }}
+        cmd: python3 /root/ansible/ai.py {{ command }}
       register: result
 
 
