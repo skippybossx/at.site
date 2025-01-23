@@ -1,0 +1,11 @@
+---
+- hosts: ansible-run
+  tasks:
+    - name: Execute command
+      ansible.builtin.command:
+        cmd: python3 /root/ai/ai_many.py "{{ command }}"
+      register: result
+
+    - name: Display output
+      ansible.builtin.debug:
+        var: result.stdout_lines
