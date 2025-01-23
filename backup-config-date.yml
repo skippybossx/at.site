@@ -5,7 +5,7 @@
     - name: Backup config to TFTP
       cisco.ios.ios_command:
         commands:
-          - "sh run | redirect tftp://10.20.30.50/{{ inventory_hostname }},{{ ansible_date_time.iso8601 | strftime('%Y-%m-%d') }}.txt"
+          - "sh run | redirect tftp://10.20.30.50/{{ inventory_hostname }}-{{ ansible_date_time.iso8601 | strftime('%Y-%m-%d') }}.txt"
       register: running_config
 
     - name: Show return
