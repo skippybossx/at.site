@@ -2,10 +2,20 @@
   hosts: switches
   gather_facts: no
   tasks:
+    - name: Get current date and time from switch
+      cisco.ios.ios_command:
+        commands:
+          - show clock
+      register: clock_output
+
+    - name: Extract date and time from show clock output
+      set_fact:
+        switch_clock: "{{ clock_output.stdout[0] | regex_search('\\S+ \\S+ \\S+ \\S+ \\S+') }}"
+
     - name: Backup config to TFTP
       cisco.ios.ios_command:
         commands:
-          - "sh run | redirect tftp://10.20.30.50/{{ inventory_hostname }},{{ '%Y-%m-%d_%H-%M-%S' | strftime(now()) }}.txt"
+          - "sh run | redirect tftp://10.20.30.50/{{ inventory_hostname }},{{ switch_clock | replace(' ', '_') | replace(':', '-') }}.txt"
       register: running_config
 
     - name: Show return
