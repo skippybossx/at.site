@@ -1,13 +1,30 @@
-- name: Show run and backup config to TFTP
+- name: Backup switch configuration to TFTP
   hosts: switches
   gather_facts: no
   tasks:
-    - name: Backup config to TFTP
+    - name: Get current date and time from Ansible
+      set_fact:
+        ansible_date: "{{ '%Y-%m-%d_%H-%M-%S' | strftime(now().timestamp()) }}"
+
+    - name: Get running configuration from switch
       cisco.ios.ios_command:
         commands:
-          - "sh run | redirect tftp://10.20.30.50/{{ inventory_hostname }}-{{ ansible_date_time.iso8601 | strftime('%Y-%m-%d') }}.txt"
+          - show run
       register: running_config
 
-    - name: Show return
-      debug:
-        var: running_config.stdout_lines
+    - name: Save running config to a local file
+      copy:
+        content: "{{ running_config.stdout[0] }}"
+        dest: "/tmp/{{ inventory_hostname }}_{{ ansible_date }}.txt"
+
+    - name: Upload config file to TFTP server
+      command: >
+        curl -T /tmp/{{ inventory_hostname }}_{{ ansible_date }}.txt
+        tftp://10.20.30.50/{{ inventory_hostname }}_{{ ansible_date }}.txt
+      args:
+        creates: /tmp/{{ inventory_hostname }}_{{ ansible_date }}.txt
+
+    - name: Clean up local file
+      file:
+        path: "/tmp/{{ inventory_hostname }}_{{ ansible_date }}.txt"
+        state: absent
