@@ -1,6 +1,6 @@
 - name: Show run and backup config to TFTP
   hosts: switches
-  gather_facts: yes
+  gather_facts: yes 
   tasks:
     - name: Backup config to TFTP
       cisco.ios.ios_command:
