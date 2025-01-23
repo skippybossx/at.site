@@ -1,0 +1,13 @@
+---
+- name: Instalacja docker-compose
+  hosts: proxmoxes
+  tasks:
+    - name: Update cache apt
+      apt:
+        update_cache: yes
+
+    - name: Install docker-compose
+      apt:
+        name: docker-compose
+        state: present
+        update_cache: yes
