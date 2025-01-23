@@ -54,7 +54,7 @@
     - name: Configure username
       ios_config:
         lines:
-          - 'username atea privilege 15 secret 9 $9$CqmW0rUcetpRl.$19Gc5fkoq8a5e/I5Fqg59y9Wa7.MgALH/zvCA6j4.U.'
+          - 'username atea privilege 15 secret 9 $9$nE7EM.dgiOvxVk$4gUmb75xn42KEGO2q6zS6X.W/SDz0GqLIbhOLXkdSHs'
 
     - name: Configure VLAN
       ios_config:
@@ -82,7 +82,7 @@
     - name: Configure logging and SNMP
       ios_config:
         lines:
-          - "logging host 10.100.100.10"
+          - "logging host 10.20.30.50"
           - "snmp-server community ro RO"
           - "snmp-server community public RO"
 
