@@ -1,0 +1,13 @@
+- name: Show run and backup config to TFTP
+  hosts: switches
+  gather_facts: yes  # Wymagane do uzyskania zmiennej ansible_date_time
+  tasks:
+    - name: Backup config to TFTP
+      cisco.ios.ios_command:
+        commands:
+          - "sh run | redirect tftp://10.20.30.50/{{ inventory_hostname }}-{{ ansible_date_time.iso8601 | strftime('%Y-%m-%d_%H-%M-%S') }}.txt"
+      register: running_config
+
+    - name: Show return
+      debug:
+        var: running_config.stdout_lines
