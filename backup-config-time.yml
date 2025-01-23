@@ -12,15 +12,10 @@
       set_fact:
         switch_clock: "{{ clock_output.stdout[0] | regex_replace('\\*', '') | trim | regex_replace('[ :]', '_') }}"
 
-    - name: Debug extracted date and time
-      debug:
-        var: switch_clock
-
     - name: Backup config to TFTP
       cisco.ios.ios_command:
         commands:
           - "sh run | redirect tftp://10.20.30.50/{{ inventory_hostname }}_{{ switch_clock }}.txt"
-        timeout: 120  # Zwiększony timeout
       register: running_config
 
     - name: Show return
