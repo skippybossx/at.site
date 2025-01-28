@@ -42,11 +42,11 @@
     - name: Copy firmware to switch via HTTP
       block:
         - name: Copying bin file. This may take a while...
-          cli_command:
+          ios_command:
             commands:
-              - "copy http://10.20.30.222/{{ios_2960_file}} flash:"
+              - "copy http://10.20.30.222/{{ios_2960_file}} flash:{{ios_2960_file}}"
           vars:
-            ansible_command_timeout: 3600
+            ansible_command_timeout: 360
 
 # change boot variable
     - name: Change Boot Variable to new image
