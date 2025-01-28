@@ -42,7 +42,7 @@
     - name: Copy firmware to switch via HTTP
       block:
         - name: Copying bin file. This may take a while...
-          ios_command:
+          cli_command:
             commands:
               - "copy http://10.20.30.222/{{ios_2960_file}} flash:"
           vars:
