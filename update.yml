@@ -1,1 +1,67 @@
-1
+---
+# firmware upgrade by skippyboss
+- hosts: 2960-ans
+# check version
+- name: upgrade firmware cisco ios
+  hosts: 2960-ans
+  vars_files:
+  - fw_upgrade.yml
+  tasks:
+    - name: CHECK CURRENT VERSION
+      ios_facts:
+    - debug:
+        msg:
+        - "Current version is {{ ansible_net_version }}"
+        - "Upgrade image is {{ ios_2960_version }}"
+    - debug:
+        msg:
+        - "Firmware will be upgraded to the latest version"
+      when: ansible_net_version != ios_2960_version
+    - name: END PLAY FOR HOST
+      meta: end_host
+      when: ansible_net_version == ios_2960_version
+# copy firmware to switch 
+#    - name: enable scp
+#      ios_config:
+#        commands:
+#          - "ip scp server enable"
+#        save_when: never
+#    - name: Copying bin file. This may take a while...
+#      net_put:
+#        src: "/etc/ansible/automagic-ios-upgrade/playbooks/firmware/{{ios_2960_file}}"
+#        dest: "flash:{{ios_2960_file}}"
+#      vars:
+#        ansible_command_timeout: 3600
+
+ copy firmware to switch http optional
+    - name: copy firmware to switch 
+      block:
+      - name: Copying bin file. This may take a while...
+        ios_command:
+           commands:
+              - command: "copy http://10.20.30.222/{{ios_2960_file}} flash:"
+        vars:
+          ansible_command_timeout: 3600
+
+# change boot variable
+    - name: Change Boot Variable to new image
+      ios_config:
+        commands:
+          - "no boot system"
+          - "boot system flash:{{ios_2960_file}}"
+        save_when: always
+# saving with new boot variable
+    - name: Save running config
+      ios_config:
+        save_when: always
+# reload 
+    - name: Reload the Device 
+      cli_command: 
+        command: reload
+        prompt: 
+          - confirm
+        answer: 
+          - 'y'
+    - debug: 
+        msg: 
+        - "Switch upgrade successfull and the switch is reloading. You can close this window."
