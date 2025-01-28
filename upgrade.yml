@@ -1,10 +1,10 @@
 ---
 # firmware upgrade by skippyboss
-- hosts: 2960-ans
+- hosts: switches
 
 # check version
 - name: upgrade firmware cisco ios
-  hosts: 2960-ans
+  hosts: switches
   vars_files:
     - fw_upgrade.yml
   tasks:
