@@ -1,0 +1,92 @@
+---
+- name: Create VM on Proxmox
+  hosts: localhost
+  gather_facts: no
+  vars:
+    proxmox_host: "https://proxmox.atea.site"
+    api_user: "root@pam"
+    api_password: "{{ lookup('env', 'PROXMOX_PASSWORD') }}"
+    node: "{{ lookup('env', 'PROXMOX_NODE') }}"
+    vm_name: "{{ lookup('env', 'VM_NAME') }}"
+    disk_size: "{{ lookup('env', 'DISK_SIZE') | default('20G') }}"
+    memory: "{{ lookup('env', 'MEMORY') | default('2048') }}"
+    cores: "{{ lookup('env', 'CORES') | default('2') }}"
+    username: "{{ lookup('env', 'USERNAME') | default('ubuntu') }}"
+    password: "{{ lookup('env', 'PASSWORD') | default('ubuntu') }}"
+    ip_address: "{{ lookup('env', 'IP_ADDRESS') | default('dhcp') }}"
+    storage: "btrfs"
+    cloud_init_image: "/mnt/pve/NFS/cloud-init/noble-server-cloudimg-amd64.img"
+  tasks:
+    - name: Get next available VM ID
+      command: "pvesh get /cluster/nextid"
+      register: next_vm_id
+      changed_when: false
+
+    - name: Set VM ID variable
+      set_fact:
+        vm_id: "{{ next_vm_id.stdout }}"
+
+    - name: Create VM in Proxmox
+      community.general.proxmox_kvm:
+        api_host: "{{ proxmox_host }}"
+        api_user: "{{ api_user }}"
+        api_password: "{{ api_password }}"
+        node: "{{ node }}"
+        vmid: "{{ vm_id }}"
+        name: "{{ vm_name }}"
+        memory: "{{ memory }}"
+        cores: "{{ cores }}"
+        scsihw: virtio-scsi-pci
+        boot: c
+        bootdisk: scsi0
+        net0: "virtio,bridge=vmbr0"
+        serial0: socket
+        ostype: l26
+        tablet: false
+        agent: enabled=1
+        onboot: true
+        tags: "ansible"
+    
+    - name: Configure disk storage
+      community.general.proxmox_disk:
+        api_host: "{{ proxmox_host }}"
+        api_user: "{{ api_user }}"
+        api_password: "{{ api_password }}"
+        vmid: "{{ vm_id }}"
+        disk: "scsi0"
+        storage: "{{ storage }}"
+        size: "{{ disk_size }}"
+        format: "qcow2"
+        prealloc: "off"
+
+    - name: Import Cloud-Init disk
+      command: >
+        qm importdisk {{ vm_id }} {{ cloud_init_image }} {{ storage }} --format qcow2
+      args:
+        creates: "/var/lib/proxmox/images/{{ vm_id }}/vm-{{ vm_id }}-disk-0.qcow2"
+
+    - name: Attach imported disk to VM
+      community.general.proxmox_kvm:
+        api_host: "{{ proxmox_host }}"
+        api_user: "{{ api_user }}"
+        api_password: "{{ api_password }}"
+        vmid: "{{ vm_id }}"
+        virtio0: "{{ storage }}:vm-{{ vm_id }}-disk-0.qcow2"
+
+    - name: Set Cloud-Init user credentials
+      community.general.proxmox_kvm:
+        api_host: "{{ proxmox_host }}"
+        api_user: "{{ api_user }}"
+        api_password: "{{ api_password }}"
+        vmid: "{{ vm_id }}"
+        ciuser: "{{ username }}"
+        cipassword: "{{ password }}"
+        ipconfig0: "ip={{ ip_address }}/24,gw=192.168.1.1"
+
+    - name: Start VM
+      community.general.proxmox_kvm:
+        api_host: "{{ proxmox_host }}"
+        api_user: "{{ api_user }}"
+        api_password: "{{ api_password }}"
+        vmid: "{{ vm_id }}"
+        state: started
