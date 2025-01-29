@@ -1,5 +1,5 @@
 ---
-- hosts: proxmoxnode
+- hosts: proxmox
   tasks:
     - name: Execute command
       ansible.builtin.command:
