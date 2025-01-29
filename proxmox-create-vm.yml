@@ -1,6 +1,6 @@
 ---
 - name: Create VM on Proxmox
-  hosts: localhost
+  hosts: proxmox
   gather_facts: no
   vars:
     proxmox_host: "https://proxmox.atea.site"
