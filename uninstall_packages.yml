@@ -1,0 +1,14 @@
+---
+- name: Universal Package Uninstaller
+  hosts: all
+  become: yes
+  tasks:
+    - name: Uninstall packages from variable
+      package:
+        name: "{{ packages_to_remove }}"
+        state: absent
+      register: uninstall_result
+
+    - name: Show removed packages
+      debug:
+        msg: "Removed packages: {{ packages_to_remove }}"
