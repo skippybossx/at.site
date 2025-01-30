@@ -3,7 +3,7 @@
   tasks:
     - name: Execute command
       ansible.builtin.command:
-        cmd: bash /mnt/pve/NFS/cloud-init/config/create_vm_arguments {{ username }} {{ password }} {{ core }} {{ memo }} {{ disc }} {{ ip | default('dhcp') }}
+        cmd: bash /mnt/pve/NFS/cloud-init/config/create_vm_arguments_custom_users {{ username }} {{ password }} {{ core }} {{ memo }} {{ disc }} {{ ip | default('dhcp') }}
       register: result
 
     - name: Display output
