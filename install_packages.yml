@@ -1,0 +1,14 @@
+---
+- name: Universal Package Installer
+  hosts: proxmoxes
+  become: yes
+  tasks:
+    - name: Install packages from variable
+      package:
+        name: "{{ packages_to_install }}"
+        state: present
+      register: install_result
+
+    - name: Show installed packages
+      debug:
+        msg: "Installed packages: {{ packages_to_install }}"
