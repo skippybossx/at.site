@@ -1,6 +1,6 @@
 ---
 - name: Universal Package Installer
-  hosts: proxmoxes
+  hosts: all
   become: yes
   tasks:
     - name: Install packages from variable
