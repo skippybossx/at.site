@@ -1,0 +1,11 @@
+---
+- hosts: proxmox
+  tasks:
+    - name: Execute command
+      ansible.builtin.command:
+        cmd: bash /mnt/pve/NFS/cloud-init/config/create_windows2025_arguments {{ core }} {{ memo }} {{ disc }} {{ ip | default('dhcp') }}
+      register: result
+
+    - name: Display output
+      ansible.builtin.debug:
+        var: result.stdout_lines
