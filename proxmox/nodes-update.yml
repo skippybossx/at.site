@@ -1,0 +1,33 @@
+---
+- name: Proxmox VE Update (No Reboot)
+  hosts: all
+  become: yes
+  tasks:
+
+    - name: Update apt repository cache
+      apt:
+        update_cache: yes
+        cache_valid_time: 3600
+
+    - name: Upgrade all installed packages (safe upgrade)
+      apt:
+        upgrade: dist
+      register: upgrade_result
+
+    - name: Upgrade Proxmox VE specific packages
+      apt:
+        name: proxmox-ve
+        state: latest
+        update_cache: yes
+      register: proxmox_upgrade_result
+
+    - name: Remove obsolete packages
+      apt:
+        autoremove: yes
+        purge: yes
+
+    - name: Display upgrade summary
+      debug:
+        msg:
+          - "APT Upgrade performed: {{ upgrade_result.changed }}"
+          - "Proxmox VE upgrade performed: {{ proxmox_upgrade_result.changed }}"
