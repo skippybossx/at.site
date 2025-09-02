@@ -1,5 +1,6 @@
 ---
 - hosts: proxmox
+  gather_facts: false
   tasks:
     - name: Execute command
       ansible.builtin.command:
