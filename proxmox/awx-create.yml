@@ -1,0 +1,11 @@
+---
+- hosts: proxmox
+  gather_facts: false
+  tasks:
+    - name: Execute command
+      raw: bash /mnt/pve/MAIN_NFS/cloud-init/config/create_debian_arguments {{ core }} {{ memo }} {{ disc }} {{ ip | default('dhcp') }}
+      register: result
+
+    - name: Display output
+      debug:
+        var: result.stdout_lines
